@@ -6,7 +6,7 @@ import ExpenseDetailModal from '../components/ExpenseDetailModal';
 import PromptModal from '../components/PromptModal';
 import ConfirmModal from '../components/ConfirmModal';
 import { useToast } from '../context/ToastContext';
-import { formatMoney, formatDate, formatDateTime, statusBadgeClass, statusIcon } from '../utils/format';
+import { formatMoney, formatDate, formatDateTimeParts, statusBadgeClass, statusIcon } from '../utils/format';
 import { useNavigate } from 'react-router-dom';
 import DistributionCard from '../components/DistributionCard';
 
@@ -169,7 +169,12 @@ export default function DashboardPage() {
                           <span className="cell-datetime">
                             {formatDate(e.data?.date)}
                             <span className="cell-sub">
-                              Submitted {formatDateTime(e.submitted_date || e.created_date)}
+                              <span className="sub-line">
+                                Submitted {formatDateTimeParts(e.submitted_date || e.created_date).date}
+                              </span>
+                              <span className="sub-line">
+                                {formatDateTimeParts(e.submitted_date || e.created_date).time}
+                              </span>
                             </span>
                           </span>
                         </td>
