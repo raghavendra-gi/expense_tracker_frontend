@@ -6,7 +6,7 @@ import { useToast } from '../context/ToastContext';
 import Layout from '../components/Layout';
 import ExpenseDetailModal from '../components/ExpenseDetailModal';
 import PromptModal from '../components/PromptModal';
-import { formatMoney, formatDate, formatDateTime, statusBadgeClass, statusIcon } from '../utils/format';
+import { formatMoney, formatDate, formatDateTimeParts, statusBadgeClass, statusIcon } from '../utils/format';
 
 const PAGE_SIZE = 10;
 
@@ -44,7 +44,7 @@ export default function ExpensesPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, isApprover, toast]);
+  }, [user, isApprover]);
 
   useEffect(() => { loadExpenses(); }, [loadExpenses]);
 
@@ -269,7 +269,12 @@ export default function ExpensesPage() {
                           <span className="cell-datetime">
                             {formatDate(e.data?.date)}
                             <span className="cell-sub">
-                              Submitted {formatDateTime(e.submitted_date || e.created_date)}
+                              <span className="sub-line">
+                                Submitted {formatDateTimeParts(e.submitted_date || e.created_date).date}
+                              </span>
+                              <span className="sub-line">
+                                {formatDateTimeParts(e.submitted_date || e.created_date).time}
+                              </span>
                             </span>
                           </span>
                         </td>

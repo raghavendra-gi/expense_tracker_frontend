@@ -139,29 +139,29 @@
 /* ── A. LAPTOP / DESKTOP (default) ── */
 :root {
   /* global text scale — used by everything that has no token of its own */
-  --fs-xs:11px; --fs-sm:12px; --fs-base:13.3px; --fs-md:14px; --fs-lg:15px;
-  --fs-xl:19px; --fs-2xl:23px; --fs-3xl:28px; --fs-4xl:34px;
+  --fs-xs:11px; --fs-sm:12px; --fs-base:13.3px; --fs-md:17px; --fs-lg:15px;
+  --fs-xl:19px; --fs-2xl:23px; --fs-3xl:35px; --fs-4xl:34px;
 
   --page-title-fs:23px;     /* "My Dashboard" heading at the top of every page */
   --stat-number-fs:28px;    /* big numbers in the 5 stat cards */
   --card-title-fs:19px;     /* "Recent Expenses" */
   --card-sub-fs:19px;       /* "₹3,291.00 approved so far" */
 
-  --tbl-th-fs:17px;         /* table column headers */
-  --tbl-td-fs:17px;         /* table rows: type, amount, date */
-  --tbl-sub-fs:15px;        /* "Submitted 05:48 pm" */
-  --tbl-badge-fs:16px;      /* Pending / Approved pills */
-  --tbl-btn-fs:16px;        /* View / End trip / Resubmit */
+  --tbl-th-fs:16px;         /* table column headers */
+  --tbl-td-fs:16px;         /* table rows: type, amount, date */
+  --tbl-sub-fs:14px;        /* "Submitted 05:48 pm" */
+  --tbl-badge-fs:13px;      /* Pending / Approved pills */
+  --tbl-btn-fs:15px;        /* View / End trip / Resubmit */
   --tbl-icon:18px;          /* edit + delete icons */
 
-  --dist-name-fs:13.3px;    /* Approved / Pending / Rejected / In Progress */
-  --dist-pct-fs:23px;       /* the % numbers */
+  --dist-name-fs:18px;    /* Approved / Pending / Rejected / In Progress */
+  --dist-pct-fs:19px;       /* the % numbers */
   --dist-sub-fs:11px;       /* VERIFIED / AWAITING ... captions */
   --dist-donut-size:170px;
   --dist-donut-thickness:35px;
 
   --modal-title-fs:15px;    /* title of every popup */
-  --meta-label-fs:11px;     /* small grey labels in the View popup */
+  --meta-label-fs:14px;     /* small grey labels in the View popup */
   --meta-value-fs:14px;
   --detail-label-fs:12px;
   --detail-value-fs:14px;
@@ -171,29 +171,29 @@
 /* ── B. TABLET (641px – 1023px) ── */
 @media (min-width:641px) and (max-width:1023px) {
   :root {
-    --fs-xs:11px; --fs-sm:12px; --fs-base:13.3px; --fs-md:14px; --fs-lg:15px;
+    --fs-xs:11px; --fs-sm:12px; --fs-base:13.3px; --fs-md:17px; --fs-lg:15px;
     --fs-xl:19px; --fs-2xl:23px; --fs-3xl:28px; --fs-4xl:34px;
 
     --page-title-fs:19px;
     --stat-number-fs:28px;
-    --card-title-fs:17px;
+    --card-title-fs:18px;
     --card-sub-fs:14px;
 
     --tbl-th-fs:13px;
-    --tbl-td-fs:16px;
-    --tbl-sub-fs:11px;
-    --tbl-badge-fs:13px;
-    --tbl-btn-fs:14px;
+    --tbl-td-fs:13.3px;
+    --tbl-sub-fs:13px;
+    --tbl-badge-fs:11px;
+    --tbl-btn-fs:10px;
     --tbl-icon:18px;
 
-    --dist-name-fs:13.3px;
-    --dist-pct-fs:23px;
+    --dist-name-fs:18.3px;
+    --dist-pct-fs:18px;
     --dist-sub-fs:11px;
-    --dist-donut-size:29px;
-    --dist-donut-thickness:41px;
+    --dist-donut-size:155px;
+    --dist-donut-thickness:36px;
 
     --modal-title-fs:15px;
-    --meta-label-fs:11px;
+    --meta-label-fs:13px;
     --meta-value-fs:14px;
     --detail-label-fs:12px;
     --detail-value-fs:14px;
@@ -204,7 +204,7 @@
 /* ── C. MOBILE (640px and narrower) ── */
 @media (max-width:640px) {
   :root {
-    --fs-xs:11px; --fs-sm:12px; --fs-base:13.3px; --fs-md:14px; --fs-lg:15px;
+    --fs-xs:11px; --fs-sm:11px; --fs-base:12.3px; --fs-md:14px; --fs-lg:15px;
     --fs-xl:19px; --fs-2xl:23px; --fs-3xl:28px; --fs-4xl:34px;
 
     --page-title-fs:15px;
@@ -213,31 +213,31 @@
     --card-sub-fs:11px;
 
     --tbl-th-fs:11px;
-    --tbl-td-fs:11px;
+    --tbl-td-fs:13px;
     --tbl-sub-fs:9px;
     --tbl-badge-fs:10px;
     --tbl-btn-fs:10px;
     --tbl-icon:11px;
 
-    --dist-name-fs:10px;
+    --dist-name-fs:9px;
     --dist-pct-fs:9px;
     --dist-sub-fs:8px;
-    --dist-donut-size:115px;
-    --dist-donut-thickness:25px;
+    --dist-donut-size:101px;
+    --dist-donut-thickness:21px;
 
-    --modal-title-fs:13px;
-    --meta-label-fs:10px;
-    --meta-value-fs:12px;
+    --modal-title-fs:12px;
+    --meta-label-fs:9px;
+    --meta-value-fs:10px;
     --detail-label-fs:11px;
-    --detail-value-fs:12px;
-    --chip-fs:10px;
+    --detail-value-fs:13px;
+    --chip-fs:12px;
   }
 }
 
 /* ══════════════════════════════════════════════════════════════
    2. BASE
    ══════════════════════════════════════════════════════════════ */
-*,*::before,*::after { margin:-1px; padding:0; box-sizing:border-box; }
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
 
 html { scrollbar-width:none; -ms-overflow-style:none; }
 html::-webkit-scrollbar { display:none; }
@@ -488,7 +488,7 @@ button,input,select,textarea { font:inherit; color:inherit; }
 .dist-item[data-status="inprogress"] { --tint:var(--st-info-bg);     --tint-border:color-mix(in srgb,var(--accent) 25%, transparent);      --ic-bg:var(--ch-series-1); }
 
 .dist-item .top { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-1); }
-.dist-item .name { display:flex; align-items:center; gap:8px; font-size:var(--dist-name-fs); font-weight:600; color:var(--ink); }
+.dist-item .name { display:flex; align-items:center; gap:5px; font-size:var(--dist-name-fs); font-weight:600; color:var(--ink); }
 .dist-item .status-ic {
   width:26px; height:26px; border-radius:50%; flex:none; background:var(--ic-bg, var(--accent)); color:#fff;
   display:flex; align-items:center; justify-content:center;
@@ -506,7 +506,7 @@ button,input,select,textarea { font:inherit; color:inherit; }
   .dist-grid { width:100%; grid-template-columns:repeat(2,1fr); gap:8px; }
   .dist-item { padding:5px; border-radius:var(--r-sm); }
   .dist-item .bar { margin-top:10px; }
-  .dist-item .top { flex-wrap:wrap; row-gap:8px; }
+  .dist-item .top { flex-wrap:wrap; row-gap:3px; }
   .dist-item .name { font-size:var(--dist-name-fs); }
   .dist-item .status-ic { width:16px; height:16px; }
   .dist-item .status-ic .icon { width:11px; height:11px; }
@@ -783,6 +783,7 @@ select.input, .form-group select {
 .table tbody tr.is-selected { background-color:var(--accent-soft); }
 .cell-sub { display:block; font-size:var(--fs-xs); color:var(--ink-3); font-weight:650; margin-top:1px; }
 .table .cell-sub { font-size:var(--tbl-sub-fs); }
+.cell-sub .sub-line { display:block; white-space:nowrap; }   /* date on one line, time on the next */
 .num { text-align:center; font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
 .table th.num { text-align:center; }
 
@@ -805,7 +806,12 @@ th[aria-sort] button { color:var(--accent-ink); }
 
 .check-cell { width:38px; }
 .check-cell input[type=checkbox] { width:17px; height:17px; accent-color:var(--accent); cursor:pointer; }
-.row-actions { display:flex; gap:5px; flex-wrap:wrap; }
+.row-actions { display:flex; gap:5px; flex-wrap:nowrap; }   /* View, Edit, Delete stay on ONE line */
+
+/* Tablet: slightly tighter cells so the one-line Actions fit without scrolling */
+@media (min-width:641px) and (max-width:1023px) {
+  .table th, .table td { padding-left:8px; padding-right:8px; }
+}
 
 /* Card-style rows on phones */
 @media (max-width:640px) {
@@ -841,7 +847,7 @@ th[aria-sort] button { color:var(--accent-ink); }
     padding-top:var(--sp-3);
   }
   .table td[data-label="Actions"]::before { flex-shrink:0; }
-  .table td[data-label="Actions"] .row-actions { flex-wrap:wrap; gap:var(--sp-3); }
+  .table td[data-label="Actions"] .row-actions { flex-wrap:nowrap; gap:var(--sp-2); }
 
   /* Status: label and badge on one line, full width */
   .table td[data-label="Status"] {
@@ -854,9 +860,11 @@ th[aria-sort] button { color:var(--accent-ink); }
 
   /* Head / HR tables (dashboard "Recent Expenses" and "View Expenses"):
      label takes the left half, the Date & time / Status / Actions values start in the right column. */
+  #recentTable td[data-label="Amount"],
   #recentTable td[data-label="Date & time"],
   #recentTable td[data-label="Status"],
   #recentTable td[data-label="Actions"],
+  #listTable   td[data-label="Amount"],
   #listTable   td[data-label="Date & time"],
   #listTable   td[data-label="Status"],
   #listTable   td[data-label="Actions"] {
@@ -867,12 +875,19 @@ th[aria-sort] button { color:var(--accent-ink); }
   #recentTable td[data-label="Date & time"],
   #listTable   td[data-label="Date & time"] { align-items:flex-start; }
 
+  #recentTable td[data-label="Amount"]::before,
   #recentTable td[data-label="Date & time"]::before,
   #recentTable td[data-label="Status"]::before,
   #recentTable td[data-label="Actions"]::before,
+  #listTable   td[data-label="Amount"]::before,
   #listTable   td[data-label="Date & time"]::before,
   #listTable   td[data-label="Status"]::before,
   #listTable   td[data-label="Actions"]::before { flex:0 0 50%; }
+
+  /* Actions: the buttons sit right next to the "ACTIONS" label (not in the right half),
+     so View + Edit + Delete all fit on ONE line */
+  #recentTable td[data-label="Actions"]::before,
+  #listTable   td[data-label="Actions"]::before { flex:0 0 auto; margin-right:var(--sp-4); }
 
   #recentTable td[data-label="Date & time"] .cell-datetime,
   #listTable   td[data-label="Date & time"] .cell-datetime { flex:1 1 auto; min-width:0; }
@@ -1413,8 +1428,12 @@ body.modal-open { overflow:hidden; }
   .stat-card { break-inside:avoid; }
   .modal { position:static; display:block !important; background:none; padding:0; overflow:visible; backdrop-filter:none; }
   .modal:not(.active) { display:none !important; }
-  /* Printing with a detail modal open should produce that one expense, not the whole page behind it. */
-  body.modal-open .app { display:none !important; }
+  /* Hide the background dashboard and sidebar, but keep the modal */
+body.modal-open .sidebar,
+body.modal-open .page-header,
+body.modal-open .main > *:not(.modal) {
+  display: none !important;
+}
   body.modal-open { overflow:visible; }
   .modal-content { box-shadow:none; border:none; max-width:none; animation:none; }
   .page:not(.active) { display:none !important; }

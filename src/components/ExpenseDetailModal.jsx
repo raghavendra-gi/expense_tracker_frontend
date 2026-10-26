@@ -86,9 +86,7 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             {fileFields.map((f) => (
               <div key={f.key} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--ink-3)', textTransform: 'uppercase' }}>
-                  {SHORT_LABELS[f.key] || f.label}
-                </span>
+                
                 <button type="button" className="peek-btn" onClick={() => showFieldFiles(f)} title={`View ${f.label}`}>
                   <svg className="icon"><use href="#i-eye" /></svg>
                 </button>
@@ -107,16 +105,70 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
       <button type="button" className="peek-btn" onClick={() => window.print()} title="Print">
         <svg className="icon"><use href="#i-print" /></svg>
       </button>
-      <button type="button" className="peek-btn" onClick={() => {
-        // Simple download logic: Generate a text file
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(expense, null, 2));
-        const dlAnchorElem = document.createElement('a');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", `expense-${expense.id}.json`);
-        dlAnchorElem.click();
-      }} title="Download">
+             <button type="button" className="peek-btn" onClick={async () => {
+        try {
+          if (!window.html2pdf) {
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+              script.onload = resolve;
+              script.onerror = () => reject(new Error("Failed to load PDF library. Check your internet."));
+              document.head.appendChild(script);
+            });
+          }
+
+          const originalElement = document.querySelector('.modal-content');
+          if (!originalElement) throw new Error("Could not find modal content.");
+
+          const clone = originalElement.cloneNode(true);
+          
+          // Remove action buttons
+          const btnRows = clone.querySelectorAll('.btn-row');
+          btnRows.forEach(row => row.remove());
+
+          const container = document.createElement('div');
+          container.style.position = 'absolute';
+          container.style.top = '-9999px';
+          container.style.width = '800px';
+          container.appendChild(clone);
+          document.body.appendChild(container);
+
+          const opt = {
+            margin:       10,
+            filename:     `Expense-${expense.id}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+              scale: 2, 
+              useCORS: true, 
+              logging: false,
+              // 👇 THIS FIXES THE COLOR ERROR 👇
+              onclone: (clonedDoc) => {
+                const style = clonedDoc.createElement('style');
+                style.innerHTML = `
+                  /* Override unsupported color-mix functions with standard hex colors */
+                  .modal-banner { border: 1px solid #e0e0e0 !important; }
+                  .badge { border: 1px solid transparent !important; }
+                  .reason-box { border: 1px solid #e0e0e0 !important; }
+                  .badge-approved { border-color: #0ca30c !important; }
+                  .badge-pending { border-color: #fab219 !important; }
+                  .badge-rejected { border-color: #d03b3b !important; }
+                `;
+                clonedDoc.head.appendChild(style);
+              }
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          await window.html2pdf().set(opt).from(clone).save();
+          document.body.removeChild(container);
+          
+        } catch (err) {
+          console.error('PDF generation failed:', err);
+          alert(err.message || 'Could not generate PDF. Please use the Print button and select "Save as PDF" instead.');
+        }
+      }} title="Download as PDF">
         <svg className="icon"><use href="#i-download" /></svg>
-      </button>
+      </button>    
     </div>
   );
 

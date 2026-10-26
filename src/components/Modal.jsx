@@ -1,16 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function Modal({ isOpen, onClose, title, children, size = 'lg', headerRight }) {
+  // 1. Store the latest onClose function in a ref so it doesn't trigger re-renders
+  const onCloseRef = useRef(onClose);
+
+  // 2. Keep the ref updated if the parent passes a new onClose
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // 3. The main effect only depends on isOpen now
   useEffect(() => {
     if (!isOpen) return;
-    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    
+    const handler = (e) => { 
+      if (e.key === 'Escape') onCloseRef.current(); 
+    };
+    
     document.addEventListener('keydown', handler);
     document.body.classList.add('modal-open');
+    
     return () => {
       document.removeEventListener('keydown', handler);
       document.body.classList.remove('modal-open');
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]); // 👈 Only isOpen is here now
 
   if (!isOpen) return null;
 

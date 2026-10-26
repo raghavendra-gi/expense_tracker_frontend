@@ -27,6 +27,13 @@ export function formatDateTime(iso) {
   });
 }
 
+/** Same as formatDateTime, but split in two so the time can sit on its own line. */
+export function formatDateTimeParts(iso) {
+  const full = formatDateTime(iso);
+  const m = full.match(/^(.*?)(?:,|\s+at)?\s+(\d{1,2}:\d{2}.*)$/i);
+  return m ? { date: m[1], time: m[2] } : { date: full, time: '' };
+}
+
 export function formatMoney(amount) {
   const n = Number(amount);
   if (!isFinite(n)) return '—';

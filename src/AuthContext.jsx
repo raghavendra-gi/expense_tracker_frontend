@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { expenseAPI } from './api/client';
 
 const AuthContext = createContext(null);
@@ -26,7 +26,8 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const login = async (username, password) => {
+  // Wrap in useCallback so the function reference doesn't change on every render
+  const login = useCallback(async (username, password) => {
     const data = await expenseAPI('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ username, password })
@@ -35,22 +36,24 @@ export function AuthProvider({ children }) {
     localStorage.setItem('current_user', JSON.stringify(data.user));
     setUser(data.user);
     document.body.classList.add('logged-in'); 
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('current_user');
     setUser(null);
     document.body.classList.remove('logged-in'); 
     window.location.hash = '#/login';
-  };
+  }, []);
+
+  // Memoize the context value so it only updates when user or loading changes
+  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// 👇 THIS IS THE LINE THAT WAS MISSING AND BROKE THE BUILD 👇
 export const useAuth = () => useContext(AuthContext);
