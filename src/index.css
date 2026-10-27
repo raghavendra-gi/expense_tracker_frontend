@@ -207,7 +207,7 @@
     --fs-xs:11px; --fs-sm:11px; --fs-base:12.3px; --fs-md:14px; --fs-lg:15px;
     --fs-xl:19px; --fs-2xl:23px; --fs-3xl:28px; --fs-4xl:34px;
 
-    --page-title-fs:15px;
+    --page-title-fs:13px;
     --stat-number-fs:23px;
     --card-title-fs:13px;
     --card-sub-fs:11px;
@@ -400,7 +400,7 @@ button,input,select,textarea { font:inherit; color:inherit; }
 .user-chip-role { font-size:var(--fs-xs); color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em; }
 
 .theme-toggle {
-  width:40px; height:40px; border:1px solid var(--border); border-radius:var(--r-sm);
+  width:33px; height:33px; border:1px solid var(--border); border-radius:var(--r-sm);
   background:var(--surface-2); color:var(--ink-2); cursor:pointer;
   display:inline-flex; align-items:center; justify-content:center; font-size:var(--fs-lg);
   transition:background-color var(--dur), color var(--dur);
@@ -1247,7 +1247,7 @@ body.modal-open { overflow:hidden; }
 @media (max-width:600px) {
   .result-meta { flex-wrap:nowrap; align-items:center; }
   .result-meta > div:first-child { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .result-meta .btn-row { flex-shrink:0; gap:7px; }
+  .result-meta .btn-row { flex-shrink:0; gap:3px; }
   .result-meta .btn-text { display:none; }
   .result-meta .btn { padding:4px; }
   .result-meta .btn .icon { width:17px; height:18px; }   /* bigger download + print icons */
@@ -1416,41 +1416,99 @@ body.modal-open { overflow:hidden; }
    17. PRINT
    ══════════════════════════════════════════════════════════════ */
 @media print {
+  /* 1. Reset backgrounds and text colors */
   :root { --surface:#fff; --bg:#fff; --ink:#000; --ink-2:#333; --ink-3:#555; --border:#ccc; }
   body { background:#fff !important; color:#000 !important; }
-  .sidebar, .sidebar-overlay, .menu-toggle, .theme-toggle, .toast-stack,
-  .tabs, .bulk-bar, .pager, .btn, .close-btn,
-  .row-actions, .check-cell, .result-meta, .skip-link,
-  .route-map, .place-suggest, .place-geo, .route-actions, .km-note { display:none !important; }
-  .route-panel { background:#fff !important; break-inside:avoid; }
-  .main { margin-left:0 !important; padding:0 !important; }
-  .card, .stat-card { box-shadow:none !important; border:1px solid #ccc !important; }
-  .stat-card { break-inside:avoid; }
-  .modal { position:static; display:block !important; background:none; padding:0; overflow:visible; backdrop-filter:none; }
-  .modal:not(.active) { display:none !important; }
-  /* Hide the background dashboard and sidebar, but keep the modal */
-body.modal-open .sidebar,
-body.modal-open .page-header,
-body.modal-open .main > *:not(.modal) {
-  display: none !important;
-}
-  body.modal-open { overflow:visible; }
-  .modal-content { box-shadow:none; border:none; max-width:none; animation:none; }
-  .page:not(.active) { display:none !important; }
-  .table { min-width:0 !important; }
-  .table thead { position:static; display:table-header-group; }
-  a[href^="data:"]::after { content:""; }
-  .detail-value .receipt-img { max-width:320px; }
-  /* Let the list flow across pages */
-  .app { display:block !important; min-height:0 !important; }
-  .main { display:block !important; width:auto !important; }
-  .page.active { animation:none !important; opacity:1 !important; transform:none !important; }
-  .card { overflow:visible !important; }
-  .table-wrap { overflow:visible !important; border:none !important; }
-  .table th { position:static !important; }
-  .table tbody tr { break-inside:avoid; page-break-inside:avoid; }
-  .table td:last-child, .table th:last-child { display:none !important; }
-  .peek-btn { display:none !important; }
+
+  /* 2. When a modal is open, hide EVERYTHING on the page */
+  body.modal-open * {
+    visibility: hidden;
+  }
+
+  /* 3. Show ONLY the modal and its contents */
+  body.modal-open .modal,
+  body.modal-open .modal * {
+    visibility: visible;
+  }
+
+  /* 4. Position the modal at the top-left of the paper */
+  body.modal-open .modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    display: block !important;
+  }
+
+  /* 5. Reset modal content styles for printing */
+  body.modal-open .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    animation: none !important;
+  }
+
+  /* 6. Hide action buttons inside the modal */
+  body.modal-open .modal .btn,
+  body.modal-open .modal .btn-row,
+  body.modal-open .modal .close-btn,
+  body.modal-open .modal .peek-btn {
+    display: none !important;
+  }
+
+  /* 7. Collapse the background to prevent blank pages */
+  body.modal-open .app,
+  body.modal-open .main {
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 8. Normal print styles (when NO modal is open) */
+  body:not(.modal-open) .sidebar,
+  body:not(.modal-open) .sidebar-overlay,
+  body:not(.modal-open) .menu-toggle,
+  body:not(.modal-open) .theme-toggle,
+  body:not(.modal-open) .toast-stack,
+  body:not(.modal-open) .tabs,
+  body:not(.modal-open) .bulk-bar,
+  body:not(.modal-open) .pager,
+  body:not(.modal-open) .btn,
+  body:not(.modal-open) .close-btn,
+  body:not(.modal-open) .row-actions,
+  body:not(.modal-open) .check-cell,
+  body:not(.modal-open) .result-meta,
+  body:not(.modal-open) .skip-link,
+  body:not(.modal-open) .route-map,
+  body:not(.modal-open) .place-suggest,
+  body:not(.modal-open) .place-geo,
+  body:not(.modal-open) .route-actions,
+  body:not(.modal-open) .km-note {
+    display: none !important;
+  }
+
+  body:not(.modal-open) .main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  body:not(.modal-open) .card,
+  body:not(.modal-open) .stat-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  body:not(.modal-open) .table tbody tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
 
 /* (Laptop table sizes are now the --tbl-* tokens in block A near the top — the old forced block was removed.) */
