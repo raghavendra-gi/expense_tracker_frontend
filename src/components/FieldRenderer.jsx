@@ -1,5 +1,8 @@
 import PlaceInput from './PlaceInput';
 import RoutePanel from './RoutePanel';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 // ── Wrapper is now OUTSIDE FieldRenderer ──
 function FieldWrapper({ field, children }) {
   const id = `f_${field.key}`;
@@ -86,18 +89,32 @@ case 'route':
         </FieldWrapper>
       );
 
-    // ──────── DATE ────────
-    case 'date':
+        // ──────── DATE ────────
+    case 'date': {
+      // 1. Convert the stored string (YYYY-MM-DD) to a Date object for the picker.
+      // We append 'T00:00:00' to prevent timezone issues where the date shifts by a day.
+      const selectedDate = value ? new Date(value + 'T00:00:00') : null;
+
       return (
         <FieldWrapper field={field}>
-          <input
-            type="date"
+          <DatePicker
             id={id}
-            value={value || ''}
-            onChange={(e) => onChange(field.key, e.target.value)}
+            selected={selectedDate}
+            onChange={(date) => {
+              // 2. Convert back to a string (YYYY-MM-DD) so your backend/database stays happy
+              const formattedDate = date ? format(date, 'yyyy-MM-dd') : '';
+              onChange(field.key, formattedDate);
+            }}
+            dateFormat="dd-MM-yyyy" // How it looks to the user
+            placeholderText="dd-mm-yyyy"
+            className="input" // Reuses your existing input CSS styling
+            popperPlacement="right-start" // 👈 This forces the calendar to open to the right
+            showPopperArrow={false}
+            autoComplete="off"
           />
         </FieldWrapper>
       );
+    }
 
     // ──────── TEXTAREA ────────
     case 'textarea':

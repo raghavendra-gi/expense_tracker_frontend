@@ -38,13 +38,17 @@ export function AuthProvider({ children }) {
     document.body.classList.add('logged-in'); 
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('current_user');
-    setUser(null);
-    document.body.classList.remove('logged-in'); 
-    window.location.hash = '#/login';
-  }, []);
+  const logout = useCallback(async () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('current_user');
+  setUser(null);
+  document.body.classList.remove('logged-in');
+
+  // NEW — stop the browser from auto-re‑authenticating on the next visit
+  if (navigator.credentials?.preventSilentAccess) {
+    try { await navigator.credentials.preventSilentAccess(); } catch { /* ignore */ }
+  }
+}, []);
 
   // Memoize the context value so it only updates when user or loading changes
   const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
