@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
-export default function Modal({ isOpen, onClose, title, children, size = 'lg', headerRight }) {
+let openModalsCount = 0;
+
+export default function Modal({ isOpen, onClose, title, children, size = 'lg', headerRight, className = '' }) {
   // 1. Store the latest onClose function in a ref so it doesn't trigger re-renders
   const onCloseRef = useRef(onClose);
 
@@ -18,17 +21,22 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg', h
     };
     
     document.addEventListener('keydown', handler);
+    openModalsCount++;
     document.body.classList.add('modal-open');
     
     return () => {
       document.removeEventListener('keydown', handler);
-      document.body.classList.remove('modal-open');
-    };
-  }, [isOpen]); // 👈 Only isOpen is here now
+      openModalsCount--; 
+      if (openModalsCount === 0) {
+        document.body.classList.remove('modal-open');
+      } // 👈 Added missing closing brace here
+    };  // 👈 This closes the return function
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  return (
+  // 👈 Added space after "return" and comma after "</div>"
+  return createPortal(
     <div
       className={`modal active ${size === 'lg' ? 'modal-lg' : size === 'sm' ? 'modal-sm' : ''}`}
       onClick={(e) => {
@@ -37,7 +45,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg', h
         if (e.target.classList.contains('modal')) onClose();
       }}
     >
-      <div className="modal-content" role="dialog" aria-modal="true">
+      <div className={`modal-content ${className}`} role="dialog" aria-modal="true">
         <div className="modal-header">
           <h2>{title}</h2>
           <div className="btn-row">
@@ -49,6 +57,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg', h
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body 
   );
 }

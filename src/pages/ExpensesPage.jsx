@@ -174,8 +174,19 @@ export default function ExpensesPage() {
 
   const totalAmount = filtered.reduce((s, e) => s + (Number(e.data?.amount) || 0), 0);
 
+  const headerRight = (
+    <button 
+      className="btn btn-secondary btn-sm" 
+      onClick={() => navigate(isApprover ? '/dashboard' : '/my')} 
+      style={{ marginRight: '10px' }}
+    >
+      <svg className="icon"><use href="#i-dashboard" /></svg> 
+      <span className="btn-text">Dashboard</span>
+    </button>
+  );
+
   return (
-    <Layout title="View Expenses">
+    <Layout title="View Expenses" headerRight={headerRight}>
       <div className="card">
         <div className="tabs" role="tablist" aria-label="Expense status">
           {[
@@ -294,7 +305,7 @@ export default function ExpensesPage() {
                               <svg className="icon"><use href="#i-eye" /></svg> View
                             </button>
 
-                                                        {isApprover && e.status === 'Pending' && (
+                            {isApprover && e.status === 'Pending' && (
                               <>
                                 <button
                                   className="btn btn-success btn-sm"
@@ -311,16 +322,6 @@ export default function ExpensesPage() {
                                   <svg className="icon"><use href="#i-x" /></svg>
                                 </button>
                               </>
-                            )}
-
-                            {isApprover && e.status === 'Pending' && (
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleAction('reject', e)}
-                                aria-label={`Reject request ${e.id}`}
-                              >
-                                <svg className="icon"><use href="#i-x" /></svg>
-                              </button>
                             )}
                           </div>
                         </td>
