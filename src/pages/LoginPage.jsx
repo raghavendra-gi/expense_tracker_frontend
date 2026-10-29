@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 
 export default function LoginPage() {
@@ -9,6 +9,16 @@ export default function LoginPage() {
   const [isBusy, setIsBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+ useEffect(() => {
+  setUsername('');
+  setPassword('');
+    const t = setTimeout(() => {
+    setUsername('');
+    setPassword('');
+  }, 100);
+  return () => clearTimeout(t);
+}, []);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -38,32 +48,36 @@ export default function LoginPage() {
           <img className="login-logo" src="/login-logo.png" alt="Expense Tracker logo" />
           <p className="login-sub">Sign in to submit and review expenses</p>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                required
-                placeholder="e.g. emp1"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
-              />
-            </div>
+          <form onSubmit={handleSubmit} autoComplete="off">
+  <div className="form-group">
+    <label htmlFor="username">Username</label>
+    <input
+      type="text"
+      id="username"
+      name="username"
+      required
+      placeholder="e.g. emp1"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      autoComplete="off"          /* was "username" */
+      autoCapitalize="off"
+      spellCheck={false}
+    />
+  </div>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <div className="pw-wrap">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  required
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                />
+  <div className="form-group">
+    <label htmlFor="password">Password</label>
+    <div className="pw-wrap">
+      <input
+        type={showPassword ? 'text' : 'password'}
+        id="password"
+        name="password"
+        required
+        placeholder="Enter password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        autoComplete="new-password"   /* was "current-password" — this is the key change */
+      />
                 <button
                   type="button"
                   className="pw-toggle"

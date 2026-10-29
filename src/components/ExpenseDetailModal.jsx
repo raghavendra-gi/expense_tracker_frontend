@@ -78,34 +78,35 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
       `&travelmode=driving`
     : '';
 
-  // 👇 PRINT & DOWNLOAD BUTTONS ADDED HERE 👇
-  const headerButtons = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '4px' }}>
+   const headerButtons = (
+    <div className="modal-file-buttons" style={{ marginRight: '8px' }}>
       {fileFields.length > 0 && (
-        isSplitView ? (
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            {fileFields.map((f) => (
-              <div key={f.key} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                
-                <button type="button" className="peek-btn" onClick={() => showFieldFiles(f)} title={`View ${f.label}`}>
-                  <svg className="icon"><use href="#i-eye" /></svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <button type="button" className="peek-btn" onClick={showAllFiles} title="View attachments">
-            <svg className="icon"><use href="#i-eye" /></svg>
-          </button>
-        )
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', maxWidth: '240px' }}>
+          {/* Loop through every field, and then every file inside that field */}
+          {fileFields.flatMap((f) =>
+            expense.data[f.key].map((file, index) => (
+              <button
+                type="button"
+                key={`${f.key}-${index}`}
+                className="peek-btn"
+                onClick={() => setPreviewFiles({
+                  files: [{ ...file, label: f.label || f.title || f.key }],
+                  title: f.label || f.title || 'Attachment'
+                })}
+                title={`View ${f.label || 'File'} ${index + 1}`}
+              >
+                <svg className="icon"><use href="#i-eye" /></svg>
+              </button>
+            ))
+          )}
+        </div>
       )}
       
-      <div style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 4px' }}></div>
-
       <button type="button" className="peek-btn" onClick={() => window.print()} title="Print">
         <svg className="icon"><use href="#i-print" /></svg>
       </button>
-             <button type="button" className="peek-btn" onClick={async () => {
+
+      <button type="button" className="peek-btn" onClick={async () => {
         try {
           if (!window.html2pdf) {
             await new Promise((resolve, reject) => {
@@ -120,19 +121,6 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
           const originalElement = document.querySelector('.modal-content');
           if (!originalElement) throw new Error("Could not find modal content.");
 
-          const clone = originalElement.cloneNode(true);
-          
-          // Remove action buttons
-          const btnRows = clone.querySelectorAll('.btn-row');
-          btnRows.forEach(row => row.remove());
-
-          const container = document.createElement('div');
-          container.style.position = 'absolute';
-          container.style.top = '-9999px';
-          container.style.width = '800px';
-          container.appendChild(clone);
-          document.body.appendChild(container);
-
           const opt = {
             margin:       10,
             filename:     `Expense-${expense.id}.pdf`,
@@ -141,17 +129,23 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
               scale: 2, 
               useCORS: true, 
               logging: false,
-              // 👇 THIS FIXES THE COLOR ERROR 👇
               onclone: (clonedDoc) => {
                 const style = clonedDoc.createElement('style');
                 style.innerHTML = `
-                  /* Override unsupported color-mix functions with standard hex colors */
+                  /* Hide all button rows (top header buttons and bottom action buttons) */
+                  .btn-row { display: none !important; }
+                  
+                  /* Ensure borders render correctly */
                   .modal-banner { border: 1px solid #e0e0e0 !important; }
                   .badge { border: 1px solid transparent !important; }
                   .reason-box { border: 1px solid #e0e0e0 !important; }
                   .badge-approved { border-color: #0ca30c !important; }
                   .badge-pending { border-color: #fab219 !important; }
                   .badge-rejected { border-color: #d03b3b !important; }
+                  
+                  /* Prevent the timeline from being awkwardly cut in half across pages */
+                  .timeline { page-break-inside: avoid !important; }
+                  .timeline li { page-break-inside: avoid !important; }
                 `;
                 clonedDoc.head.appendChild(style);
               }
@@ -159,8 +153,8 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
           };
 
-          await window.html2pdf().set(opt).from(clone).save();
-          document.body.removeChild(container);
+          // Pass the original element directly to html2pdf
+          await window.html2pdf().set(opt).from(originalElement).save();
           
         } catch (err) {
           console.error('PDF generation failed:', err);
@@ -168,14 +162,44 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
         }
       }} title="Download as PDF">
         <svg className="icon"><use href="#i-download" /></svg>
-      </button>    
-    </div>
-  );
+      </button>
+    </div> 
+  ); // 👈 FIXED: Added missing closing </div> above
 
+  const renderDetails = (isSplit) => {
+    return config.fields.map((f) => {
+      if (HIDDEN.includes(f.key) || f.type === 'file' || f.type === 'route') return null;
+      if (showTripLink && ['from', 'to', 'startLocation', 'endLocation'].includes(f.key)) return null;
+      
+      if (isSplit && ['kilometers'].includes(f.key)) return null;
+
+      const v = expense.data[f.key];
+      if (v === undefined || v === '' || (Array.isArray(v) && !v.length)) return null;
+
+      return (
+        <div className="detail-row" key={f.key}>
+          <div className="detail-icon"><svg className="icon"><use href={`#${FIELD_ICONS[f.key] || 'i-info'}`} /></svg></div>
+          <div className="detail-text">
+            <div className="detail-label">{f.label || f.title || f.key}</div>
+            <div className="detail-value">
+              {f.type === 'date' ? formatDate(v)
+                : f.type === 'number' ? (f.money ? formatMoney(v) : String(v) + (f.unit ? ' ' + f.unit : ''))
+                : f.type === 'checkboxes' ? (
+                  <div className="items-list">
+                    {v.map((item, i) => <span key={i} className="item-chip">{item}</span>)}
+                  </div>
+                )
+                : String(v)}
+            </div>
+          </div>
+        </div>
+      );
+    });
+  };
+  
   return (
     <Modal isOpen={true} onClose={onClose} title={`${expense.type} · #${expense.id}`} size="lg" headerRight={headerButtons}>
       
-      {/* ... Banner, Meta, Details, Timeline, Action Buttons ... (same as before) */}
       <div className="modal-banner">
         <div className="banner-main">
           <div className="banner-title-row">
@@ -238,54 +262,39 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
         </div>
       </div>
 
-      {showTripLink && (
-        <>
-          <div className="section-title">Route</div>
-          <div className="route-detail">
-            <div className="rd-line"><svg className="icon"><use href="#i-pin" /></svg><span>{tripOrigin}</span></div>
-            <div className="rd-line"><svg className="icon"><use href="#i-flag" /></svg><span>{tripDestination}</span></div>
-            <div className="rd-line">
-              <svg className="icon"><use href="#i-route" /></svg>
-              <span className="rd-figures">
-                {expense.data.kilometers ? `${expense.data.kilometers} km` : expense.data.distanceKm ? `${expense.data.distanceKm} km` : 'Distance not recorded'}
-              </span>
+      {showTripLink ? (
+        <div className="split-details-layout">
+          <div>
+            <div className="section-title">Route</div>
+            <div className="route-detail">
+              <div className="rd-line"><svg className="icon"><use href="#i-pin" /></svg><span>{tripOrigin}</span></div>
+              <div className="rd-line"><svg className="icon"><use href="#i-flag" /></svg><span>{tripDestination}</span></div>
+              <div className="rd-line">
+                <svg className="icon"><use href="#i-route" /></svg>
+                <span className="rd-figures">
+                  {expense.data.kilometers ? `${expense.data.kilometers} km` : expense.data.distanceKm ? `${expense.data.distanceKm} km` : 'Distance not recorded'}
+                </span>
+              </div>
+              <a className="rd-map-link" href={mapsLink} target="_blank" rel="noopener noreferrer">
+                <svg className="icon"><use href="#i-external" /></svg> Open in Google Maps
+              </a>
             </div>
-            <a className="rd-map-link" href={mapsLink} target="_blank" rel="noopener noreferrer">
-              <svg className="icon"><use href="#i-external" /></svg> Open in Google Maps
-            </a>
+          </div>
+          <div>
+            <div className="section-title">Details</div>
+            <div className="detail-grid" style={{ gridTemplateColumns: '1fr' }}>
+              {renderDetails(true)}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="section-title">Details</div>
+          <div className="detail-grid">
+            {renderDetails(false)}
           </div>
         </>
       )}
-
-      <div className="section-title">Details</div>
-      <div className="detail-grid">
-        {config.fields.map((f) => {
-          if (HIDDEN.includes(f.key) || f.type === 'file' || f.type === 'route') return null;
-          if (showTripLink && ['from', 'to', 'startLocation', 'endLocation'].includes(f.key)) return null;
-
-          const v = expense.data[f.key];
-          if (v === undefined || v === '' || (Array.isArray(v) && !v.length)) return null;
-
-          return (
-            <div className="detail-row" key={f.key}>
-              <div className="detail-icon"><svg className="icon"><use href={`#${FIELD_ICONS[f.key] || 'i-info'}`} /></svg></div>
-              <div className="detail-text">
-                <div className="detail-label">{f.label || f.title || f.key}</div>
-                <div className="detail-value">
-                  {f.type === 'date' ? formatDate(v)
-                    : f.type === 'number' ? (f.money ? formatMoney(v) : String(v) + (f.unit ? ' ' + f.unit : ''))
-                    : f.type === 'checkboxes' ? (
-                      <div className="items-list">
-                        {v.map((item, i) => <span key={i} className="item-chip">{item}</span>)}
-                      </div>
-                    )
-                    : String(v)}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
       {Array.isArray(expense.history) && expense.history.length > 0 && (
         <>
@@ -352,14 +361,14 @@ export default function ExpenseDetailModal({ expense, onClose, onAction }) {
 
 function FilePreviewModal({ files, title, onClose }) {
   return (
-    <Modal isOpen={true} onClose={onClose} title={title}>
+    <Modal isOpen={true} onClose={onClose} title={title} className="image-viewer-modal">
       <div className="preview-strip">
         {files.map((file, i) => {
           if (!file.dataUrl) return <p key={i} className="preview-cap">{file.name} — no preview available</p>;
           return file.type === 'application/pdf' ? (
             <iframe key={i} src={file.dataUrl} className="image-preview-pdf" title={file.name} />
           ) : (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: file.label ? '16px 16px 0 16px' : '0' }}>
               {file.label && <p style={{ fontSize: 'var(--fs-sm)', fontWeight: 600, color: 'var(--ink-2)', marginBottom: 2 }}>{file.label}</p>}
               <img src={file.dataUrl} alt={file.name} />
             </div>

@@ -305,7 +305,7 @@ export default function ExpensesPage() {
                               <svg className="icon"><use href="#i-eye" /></svg> View
                             </button>
 
-                                                        {isApprover && e.status === 'Pending' && (
+                            {isApprover && e.status === 'Pending' && (
                               <>
                                 <button
                                   className="btn btn-success btn-sm"
@@ -322,16 +322,6 @@ export default function ExpensesPage() {
                                   <svg className="icon"><use href="#i-x" /></svg>
                                 </button>
                               </>
-                            )}
-
-                            {isApprover && e.status === 'Pending' && (
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleAction('reject', e)}
-                                aria-label={`Reject request ${e.id}`}
-                              >
-                                <svg className="icon"><use href="#i-x" /></svg>
-                              </button>
                             )}
                           </div>
                         </td>

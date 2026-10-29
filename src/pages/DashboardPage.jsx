@@ -193,18 +193,6 @@ export default function DashboardPage() {
                             >
                               <svg className="icon"><use href="#i-eye" /></svg> View
                             </button>
-
-                            {/* 👇 FIXED: Add Edit/Delete for employees */}
-                            {!isApprover && e.status === 'Pending' && (
-                              <>
-                                <button className="btn btn-secondary btn-sm btn-icon" onClick={() => handleAction('edit', e)} title="Edit">
-                                  <svg className="icon"><use href="#i-pencil" /></svg>
-                                </button>
-                                <button className="btn btn-ghost btn-sm btn-icon" onClick={() => handleAction('delete', e)} title="Delete">
-                                  <svg className="icon"><use href="#i-trash" /></svg>
-                                </button>
-                              </>
-                            )}
                           </div>
                         </td>
                       </tr>
